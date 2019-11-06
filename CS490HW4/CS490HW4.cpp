@@ -2,21 +2,30 @@
 //
 
 #include <iostream>
+#include <fstream>
 #include <queue>
 //#include <deque>
 #include <vector>
+
+
+struct Process
+{
+	int processId;
+	int arrivalTime;
+	int serviceTime;
+	int cpuTime;
+};
+
+void calculateTat(vector<Process>* q);
+void calculateNormTat(vector<Process>* q);
 
 using namespace std;
 
 int main()
 {
-	struct Process
-	{
-		int processId;
-		int arrivalTime;
-		int serviceTime;
-		int cpuTime;
-	};
+	
+
+	fstream data("input.txt", ios_base::in);
 
 	int temp[] = { 2,3,4,7,7,6,13,16,11,10,3,5,4,2,6,7 }; // Remove, read in from file
 
@@ -24,7 +33,7 @@ int main()
 	int clock = 0;
 	int quantum = 7; //Change to be able to take in input from file
 	queue<Process> processQueue;
-	queue<Process> finishedQueue;
+	vector<Process>* finishedList = new vector<Process>();
 
 	//Read in the process service times from the file
 	//and add the process to the end of the queue
@@ -52,21 +61,25 @@ int main()
 		clock += neededQuantum;
 
 		if (p.cpuTime == p.serviceTime) {
-			finishedQueue.push(p);
+			finishedList->push_back(p);
 		}
 		else {
 			processQueue.push(p);
 		}
 	}
 
+	calculateTat(finishedList);
+	calculateNormTat(finishedList);
+
 }
 
+void calculateTat(vector<Process>* finishedQueue) {
 
+}
 
+void calculateNormTat(vector<Process>* finishedQueue) {
 
-
-
-
+}
 
 
 
