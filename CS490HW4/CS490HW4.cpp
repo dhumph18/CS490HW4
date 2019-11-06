@@ -24,6 +24,7 @@ int main()
 	int clock = 0;
 	int quantum = 7; //Change to be able to take in input from file
 	queue<Process> processQueue;
+	queue<Process> finishedQueue;
 
 	//Read in the process service times from the file
 	//and add the process to the end of the queue
@@ -34,7 +35,29 @@ int main()
 		processQueue.push(p);
 	}
 
-	
+	while (!processQueue.empty()) {
+		Process p = processQueue.front();
+		processQueue.pop();
+		int neededQuantum;
+		int timeRemaining = p.serviceTime - p.cpuTime;
+
+		if (timeRemaining >= quantum) {
+			neededQuantum = quantum;
+		}
+		else {
+			neededQuantum = timeRemaining;
+		}
+
+		p.cpuTime += neededQuantum;
+		clock += neededQuantum;
+
+		if (p.cpuTime == p.serviceTime) {
+			finishedQueue.push(p);
+		}
+		else {
+			processQueue.push(p);
+		}
+	}
 
 }
 
