@@ -2,7 +2,7 @@
 //
 
 #include <iostream>
-//#include <queue>
+#include <queue>
 //#include <deque>
 #include <vector>
 
@@ -18,22 +18,23 @@ int main()
 		int cpuTime;
 	};
 
-	vector<Process>* processes = new vector<Process>();
-	int temp[] = { 1,2,3,4 }; // Remove
+	int temp[] = { 2,3,4,7,7,6,13,16,11,10,3,5,4,2,6,7 }; // Remove, read in from file
 
 	int id = 0;
 	int clock = 0;
 	int quantum = 7; //Change to be able to take in input from file
-	//queue<Process> processes (deque<Process>(4));
+	queue<Process> processQueue;
 
 	//Read in the process service times from the file
 	//and add the process to the end of the queue
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 15; i++) {
 		//Arrival time is??
 		struct Process p { id++, 0, temp[i], 0 };
 		cout << "Process #" << p.processId << " Service Time = " << p.serviceTime << endl;
-		processes->push_back(p);
+		processQueue.push(p);
 	}
+
+	
 
 }
 
