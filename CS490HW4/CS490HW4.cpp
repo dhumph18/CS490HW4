@@ -6,6 +6,7 @@
 #include <queue>
 //#include <deque>
 #include <vector>
+#include <sstream>
 
 
 struct Process
@@ -16,18 +17,55 @@ struct Process
 	int cpuTime;
 };
 
-void calculateTat(vector<Process>* q);
-void calculateNormTat(vector<Process>* q);
+//void calculateTat(vector<Process> &q);
+//void calculateNormTat(vector<Process> &q);
 
 using namespace std;
 
 int main()
 {
-	
+	vector<int>* quantumTimes = new vector<int>();
+	vector<int> inputServiceTimes;
+	vector<int> inputQuantumTimes;
+
 
 	fstream data("input.txt", ios_base::in);
 
-	int temp[] = { 2,3,4,7,7,6,13,16,11,10,3,5,4,2,6,7 }; // Remove, read in from file
+	//int time;
+	//char test[] = "5 7";
+	//stringstream ss;
+	//ss << test;
+	//while (ss >> time) {
+	//	inputTimes.push_back(time);
+	//}
+
+	char* quantums = new char(10);
+	char* serviceTimes = new char(100);
+	
+	data.getline(quantums, 10);
+	data.getline(serviceTimes, 100);
+
+	int time;
+	stringstream ss;
+	ss << serviceTimes;
+	while (ss >> time) {
+		inputServiceTimes.push_back(time);
+	}
+
+	int num;
+	stringstream ss2;
+	ss2 << quantums;
+	while (ss2 >> num) {
+		inputQuantumTimes.push_back(num);
+	}
+	
+
+
+	cout << "Input data:" << endl;
+	for (int i = 0; i < (int)inputServiceTimes.size(); i++) {
+		cout << inputServiceTimes.at(i) << " ";
+	}
+	cout << endl;
 
 	int id = 0;
 	int clock = 0;
@@ -37,9 +75,9 @@ int main()
 
 	//Read in the process service times from the file
 	//and add the process to the end of the queue
-	for (int i = 0; i < 15; i++) {
+	for (int i = 0; i < (int)inputServiceTimes.size(); i++) {
 		//Arrival time is??
-		struct Process p { id++, 0, temp[i], 0 };
+		struct Process p { id++, 0, inputServiceTimes.at(i), 0 };
 		cout << "Process #" << p.processId << " Service Time = " << p.serviceTime << endl;
 		processQueue.push(p);
 	}
@@ -68,18 +106,18 @@ int main()
 		}
 	}
 
-	calculateTat(finishedList);
-	calculateNormTat(finishedList);
+	//calculateTat(*finishedList);
+	//calculateNormTat(*finishedList);
 
 }
 
-void calculateTat(vector<Process>* finishedQueue) {
+//void calculateTat(vector<Process> &finishedQueue) {
+//
+//}
 
-}
-
-void calculateNormTat(vector<Process>* finishedQueue) {
-
-}
+//void calculateNormTat(vector<Process> &finishedQueue) {
+//
+//}
 
 
 
