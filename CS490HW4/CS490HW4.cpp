@@ -17,19 +17,19 @@ struct Process
 	int cpuTime;
 };
 
-//void calculateTat(vector<Process> &q);
 //void calculateNormTat(vector<Process> &q);
 
 using namespace std;
 
 int main()
 {
+	void calculateTat(vector<Process> &p);
 	vector<int>* quantumTimes = new vector<int>();
 	vector<int> inputServiceTimes;
 	vector<int> inputQuantumTimes;
 
 
-	fstream data("input.txt", ios_base::in);
+	fstream data("HWK4input.txt", ios_base::in);
 
 	//int time;
 	//char test[] = "5 7";
@@ -40,32 +40,36 @@ int main()
 	//}
 
 	char* quantums = new char(10);
-	char* serviceTimes = new char(100);
+	
 	
 	data.getline(quantums, 10);
-	data.getline(serviceTimes, 100);
-
-	int time;
-	stringstream ss;
-	ss << serviceTimes;
-	while (ss >> time) {
-		inputServiceTimes.push_back(time);
-	}
-
 	int num;
 	stringstream ss2;
 	ss2 << quantums;
 	while (ss2 >> num) {
 		inputQuantumTimes.push_back(num);
+		cout << num << endl;
 	}
 	
 
+	while (!data.eof()) {
+		char* serviceTimes = new char(5);
+		data.getline(serviceTimes, 5);
+		int time;
+		stringstream ss;
+		ss << serviceTimes;
+		while (ss >> time) {
+			inputServiceTimes.push_back(time);
+		}
+	}
 
-	cout << "Input data:" << endl;
+	
+
+	/*cout << "Input data:" << endl;
 	for (int i = 0; i < (int)inputServiceTimes.size(); i++) {
 		cout << inputServiceTimes.at(i) << " ";
 	}
-	cout << endl;
+	cout << endl;*/
 
 	int id = 0;
 	int clock = 0;
@@ -106,14 +110,24 @@ int main()
 		}
 	}
 
-	//calculateTat(*finishedList);
+	vector<Process>* sortedVec = new vector<Process>();
+	for (int i = 0; i < (int)finishedList->size(); i++) {
+		sortedVec->at(finishedList->at(i).processId - 1) = finishedList->at(i);
+	}
+
+	calculateTat(*sortedVec);
 	//calculateNormTat(*finishedList);
 
 }
 
-//void calculateTat(vector<Process> &finishedQueue) {
-//
-//}
+void calculateTat(vector<Process> &sortedVec) {
+	vector<int> tats;
+	for (int i = 0; i < (int)sortedVec.size(); i++) {
+		Process p = sortedVec.at(i);
+		tats.at(i) = p.cpuTime - p.arrivalTime;
+		cout << tats.at(i) << endl;
+	}
+}
 
 //void calculateNormTat(vector<Process> &finishedQueue) {
 //
