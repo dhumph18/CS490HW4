@@ -1,8 +1,13 @@
-// CS490HW4.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-//TODO List
-// - Document/Comment code
-// - One page summary
+/*
+HumphreyDrewHWK4
+CS490
+11/13/19
+
+This program simulates a Round Robin scheduling algorithm using two quantum sizes.
+One of which is slightly less than the average service time, and one which is slightly more.
+The purpose is to demonstrate Stalling's guideline that quantum size should be a little
+larger than the time required for a "typical" interaction of process function.
+*/
 
 #include <iostream>
 #include <fstream>
@@ -20,16 +25,27 @@ struct Process
 	int serviceTime;
 	int cpuTime;
 	int completionTime; //Time that the process completed.
-	int tat; //Turn around time
-	float normTat; //Normalized turn around time
-	int rotations; //The number of times that the process had to be recycled into the queue
+	int tat;			//Turn around time (completionTime - serviceTime)
+	float normTat;		//Normalized turn around time (tat / serviceTime)
+	int rotations;		//The number of times that the process had to be recycled into the queue
 };
 
+//Calculate the statistics for the individual processes
 void calculateIndStats(vector<Process> &finishedList);
+
+//Read the input file and stores the quantum and service times in the appropriate vectors/queue
 void readInputFile(vector<int> &quantumTimes, vector<int> &serviceTimes, queue<Process> &processes);
+
+//Simulates the round robin scheduling
 int simulateRoundRobin(queue<Process> processQueue, int quantum, vector<Process> *finishedList);
+
+//Prints the individual statistics of the first 15 processes to finish to the output file
 void printIndStats(vector<Process> &finishedList, int quantum, bool firstOutput);
+
+//Prints the system statistics to the output file
 void printSystemStats(vector<Process>& finishedList, int quantum, int finalClock);
+
+//Rounds a float to 2 decimal precision
 float rounding(float num);
 
 int main()
@@ -44,7 +60,6 @@ int main()
 
 	cout << "Creating output file named outputHWK4.txt....." << endl;
 
-	//Need to later run this twice for each quantum size
 	for (int i = 0; i < (int)inputQuantumTimes.size(); i++) {
 		vector<Process>* finishedList = new vector<Process>();
 
@@ -59,13 +74,13 @@ int main()
 	cout << "\nFinished" << endl;
 }
 
-//Read in the process service times from the file
-//and add the process to the end of the queue
+//Read in the process service times from the file and add the process to the end of the queue
 void readInputFile(vector<int> &quantumTimes, vector<int> &serviceTimes, queue<Process> &processQueue) {
 	int id = 0;
 	fstream data("HWK4input.txt", ios_base::in);
 	char* quantums = new char(10);
 	
+	//Get the 2 quantum times and store in a vector
 	data.getline(quantums, 10);
 	int num;
 	stringstream ss2;
@@ -74,6 +89,7 @@ void readInputFile(vector<int> &quantumTimes, vector<int> &serviceTimes, queue<P
 		quantumTimes.push_back(num);
 	}
 
+	//Get all the service times and store in a vector
 	while (!data.eof()) {
 		char* inputTime = new char(5);
 		data.getline(inputTime, 5);
@@ -85,6 +101,7 @@ void readInputFile(vector<int> &quantumTimes, vector<int> &serviceTimes, queue<P
 		}
 	}
 
+	//Use the times from the input file to create Processes and push each one to the end of the process queue
 	for (int i = 0; i < (int)serviceTimes.size(); i++) {
 		struct Process p { id++, 0, serviceTimes.at(i), 0 };
 		processQueue.push(p);
@@ -94,12 +111,14 @@ void readInputFile(vector<int> &quantumTimes, vector<int> &serviceTimes, queue<P
 int simulateRoundRobin(queue<Process> processQueue, int quantum, vector<Process>* finishedList) {
 	int clock = 0;
 
+	//While processes are still in the queue, execute them in the quantum until the process's cpuTime equals their service time
 	while (!processQueue.empty()) {
 		Process p = processQueue.front();
 		processQueue.pop();
 		int neededQuantum;
 		int timeRemaining = p.serviceTime - p.cpuTime;
 
+		//Only use a quantum size that is needed or is the max quantum size
 		if (timeRemaining >= quantum) {
 			neededQuantum = quantum;
 		}
@@ -111,11 +130,12 @@ int simulateRoundRobin(queue<Process> processQueue, int quantum, vector<Process>
 		clock += neededQuantum;
 		p.rotations += 1;
 
+		//If finished then keep the completion time and add the process to the finished list
 		if (p.cpuTime == p.serviceTime) {
 			p.completionTime = clock;
 			finishedList->push_back(p);
 		}
-		else {
+		else { //Add to the back of the queue to be executed again
 			processQueue.push(p);
 		}
 	}
@@ -123,6 +143,7 @@ int simulateRoundRobin(queue<Process> processQueue, int quantum, vector<Process>
 	return clock;
 }
 
+//Calculate the TAT and Normalized TAT for each process
 void calculateIndStats(vector<Process> &finishedList) {
 	for (int i = 0; i < (int)finishedList.size(); i++) {
 		Process p = finishedList.at(i);
@@ -132,8 +153,11 @@ void calculateIndStats(vector<Process> &finishedList) {
 	}
 }
 
+//Print the statistics for the first 15 processes to the output file
 void printIndStats(vector<Process>& finishedList, int quantum, bool firstOutput) {
 	ofstream output;
+
+	//Append to the file if this is not the first time outputting to the file
 	if (firstOutput) {
 		output.open("HWK4output.txt");
 	}
@@ -144,6 +168,7 @@ void printIndStats(vector<Process>& finishedList, int quantum, bool firstOutput)
 	output << "Results for first 15 processes to finish with quantum size = " << quantum << endl;
 	output << setw(5) << "PID" << setw(15) << "Arrival Time" << setw(15) << "Service Time" << setw(20) << "Deptarture Time" << setw(10) << "TAT" << setw(13) << "Norm TAT" << endl;
 
+	//Output the data
 	for (int i = 0; i < 15; i++) {
 		Process p = finishedList.at(i);
 		output << setw(5) << p.processId << setw(15) << p.arrivalTime << setw(15) << p.serviceTime << setw(20) << p.completionTime << setw(10) << p.tat << setw(13) << rounding(p.normTat) << endl;
@@ -153,6 +178,7 @@ void printIndStats(vector<Process>& finishedList, int quantum, bool firstOutput)
 	output.close();
 }
 
+//Print the remaining system statistics
 void printSystemStats(vector<Process>& finishedList, int quantum, int finalClock) {
 
 	int shortSum = 0;
@@ -167,6 +193,7 @@ void printSystemStats(vector<Process>& finishedList, int quantum, int finalClock
 	float longNTatSum = 0;
 	float systemNTatSum = 0;
 
+	//Determine the sums of the statistics depending on if the process was short, medium, or long
 	for (int i = 0; i < (int)finishedList.size(); i++) {
 		Process p = finishedList.at(i);
 		if (p.rotations == 1) {
@@ -188,6 +215,7 @@ void printSystemStats(vector<Process>& finishedList, int quantum, int finalClock
 		systemNTatSum += p.normTat;
 	}
 
+	//Find each of the averages
 	float shortTatAvg = shortTatSum / (float)shortSum;
 	float medTatAvg = medTatSum / (float)medSum;
 	float longTatAvg = longTatSum / (float)longSum;
@@ -201,6 +229,7 @@ void printSystemStats(vector<Process>& finishedList, int quantum, int finalClock
 	ofstream output;
 	output.open("HWK4output.txt", ios_base::app);
 
+	//Output the data
 	output << "\nSummary Statistics for Quantum Size = " << quantum << endl;
 	output << "Quantum = " << quantum << ", Number of clock ticks = " << finalClock << endl;
 	output << setw(30) << "Short" << setw(15) << "Medium" << setw(15) << "Long" << setw(15) << "System" << endl;
@@ -211,15 +240,8 @@ void printSystemStats(vector<Process>& finishedList, int quantum, int finalClock
 	output.close();
 }
 
+//Rounds a float to 2 decimal precision
 float rounding(float num) {
 	float value = (int)(num * 100 + .5);
 	return (float)value / 100;
 }
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
