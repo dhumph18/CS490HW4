@@ -29,6 +29,7 @@ struct Process
 	int tat;			//Turn around time (completionTime - serviceTime)
 	float normTat;		//Normalized turn around time (tat / serviceTime)
 	int rotations;		//The number of times that the process had to be recycled into the queue
+	string length;		//Length of the process (short, medium, or long)
 };
 
 //Calculate the statistics for the individual processes
@@ -151,6 +152,15 @@ void calculateIndStats(vector<Process> &finishedList) {
 		Process p = finishedList.at(i);
 		p.tat = p.completionTime - p.arrivalTime;
 		p.normTat = p.tat / (float)p.serviceTime;
+		if (p.rotations == 1) {
+			p.length = "Short";
+		}
+		else if (p.rotations == 2) {
+			p.length = "Medium";
+		}
+		else {
+			p.length = "Long";
+		}
 		finishedList.at(i) = p;
 	}
 }
@@ -168,12 +178,12 @@ void printIndStats(vector<Process>& finishedList, int quantum, bool firstOutput)
 	}
 	
 	output << "Results for first 15 processes to finish with quantum size = " << quantum << endl;
-	output << setw(5) << "PID" << setw(15) << "Arrival Time" << setw(15) << "Service Time" << setw(20) << "Deptarture Time" << setw(10) << "TAT" << setw(13) << "Norm TAT" << endl;
+	output << setw(5) << "PID" << setw(15) << "Arrival Time" << setw(15) << "Service Time" << setw(20) << "Deptarture Time" << setw(10) << "TAT" << setw(13) << "Norm TAT" << setw(10) << "Length" << endl;
 
 	//Output the data
 	for (int i = 0; i < 15; i++) {
 		Process p = finishedList.at(i);
-		output << setw(5) << p.processId << setw(15) << p.arrivalTime << setw(15) << p.serviceTime << setw(20) << p.completionTime << setw(10) << p.tat << setw(13) << rounding(p.normTat) << endl;
+		output << setw(5) << p.processId << setw(15) << p.arrivalTime << setw(15) << p.serviceTime << setw(20) << p.completionTime << setw(10) << p.tat << setw(13) << rounding(p.normTat) << setw(10) << p.length << endl;
 
 	}
 
