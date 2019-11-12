@@ -1,5 +1,6 @@
 /*
-HumphreyDrewHWK4
+HumphreyDHWK4
+Drew Humphrey
 CS490
 11/13/19
 
@@ -36,7 +37,7 @@ void calculateIndStats(vector<Process> &finishedList);
 //Read the input file and stores the quantum and service times in the appropriate vectors/queue
 void readInputFile(vector<int> &quantumTimes, vector<int> &serviceTimes, queue<Process> &processes);
 
-//Simulates the round robin scheduling
+//Simulates the round robin scheduling, returns the total clock time
 int simulateRoundRobin(queue<Process> processQueue, int quantum, vector<Process> *finishedList);
 
 //Prints the individual statistics of the first 15 processes to finish to the output file
@@ -108,6 +109,7 @@ void readInputFile(vector<int> &quantumTimes, vector<int> &serviceTimes, queue<P
 	}
 }
 
+//Simulates the round robin scheduling, returns the total clock time
 int simulateRoundRobin(queue<Process> processQueue, int quantum, vector<Process>* finishedList) {
 	int clock = 0;
 
