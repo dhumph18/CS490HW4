@@ -242,7 +242,7 @@ void printSystemStats(vector<Process>& finishedList, int quantum, int finalClock
 	output.open("HWK4output.txt", ios_base::app);
 
 	//Output the data
-	output << "\nSummary Statistics for Quantum Size = " << quantum << endl;
+	output << "\nSummary Statistics for quantum size = " << quantum << endl;
 	output << "Quantum = " << quantum << ", Number of clock ticks = " << finalClock << endl;
 	output << setw(30) << "Short" << setw(15) << "Medium" << setw(15) << "Long" << setw(15) << "System" << endl;
 	output << "Number of processes " << setw(10) << shortSum << setw(15) << medSum << setw(15) << longSum << setw(15) << finishedList.size() << endl;
